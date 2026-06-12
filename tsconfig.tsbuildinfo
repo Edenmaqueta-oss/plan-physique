@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/types.ts","./src/vite-env.d.ts","./src/components/foodpicker.tsx","./src/components/machoiretab.tsx","./src/components/plantab.tsx","./src/components/statstab.tsx","./src/components/suivitab.tsx","./src/data/foods.ts","./src/lib/anthropic.ts","./src/lib/storage.ts"],"version":"5.9.3"}
