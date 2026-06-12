@@ -118,19 +118,37 @@ export const FOODS: Food[] = [
 
 export const FOOD_BY_ID = Object.fromEntries(FOODS.map((f) => [f.id, f])) as Record<string, Food>
 
-/** Recherche insensible aux accents/casse */
+function normalize(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae')
+}
+
+/**
+ * Recherche insensible aux accents/casse, triée par pertinence :
+ * correspondance exacte → début du nom → début d'un mot → ailleurs.
+ * (ex : « oeuf » renvoie « Œuf entier » avant « Bœuf haché »)
+ */
 export function searchFoods(query: string, category?: Category | 'all'): Food[] {
-  const norm = (s: string) =>
-    s
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '')
-      .replace(/œ/g, 'oe')
-      .replace(/æ/g, 'ae')
-  const q = norm(query.trim())
-  return FOODS.filter((f) => {
-    if (category && category !== 'all' && f.category !== category) return false
-    if (!q) return true
-    return norm(f.name).includes(q)
-  })
+  const q = normalize(query.trim())
+  const inCat = (f: Food) => !category || category === 'all' || f.category === category
+
+  if (!q) return FOODS.filter(inCat)
+
+  const scored = FOODS.filter(inCat)
+    .map((f) => {
+      const n = normalize(f.name)
+      const idx = n.indexOf(q)
+      let score = -1
+      if (idx === 0) score = n === q ? 0 : 1
+      else if (idx > 0) score = /[\s'-]/.test(n[idx - 1]) ? 2 : 3
+      return { f, score }
+    })
+    .filter((x) => x.score >= 0)
+
+  scored.sort((a, b) => a.score - b.score || a.f.name.length - b.f.name.length)
+  return scored.map((x) => x.f)
 }

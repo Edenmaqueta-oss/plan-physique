@@ -1,7 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Category, EatenItem, Food } from '../types'
 import { CATEGORIES, searchFoods } from '../data/foods'
 import { uid } from '../lib/storage'
+
+/** Sépare une quantité en tête de requête : "4 oeuf entier" → { qty: 4, term: "oeuf entier" } */
+function parseQuery(raw: string): { qty: string | null; term: string } {
+  const m = raw.match(/^\s*(\d+(?:[.,]\d+)?)\s+(.+)$/)
+  if (m) return { qty: m[1].replace(',', '.'), term: m[2] }
+  return { qty: null, term: raw }
+}
 
 interface Props {
   onAdd: (item: EatenItem) => void
@@ -24,17 +31,27 @@ export default function FoodPicker({
   const [mode, setMode] = useState<'g' | 'unit'>('g')
   const [qty, setQty] = useState<string>('100')
   const [manualGrams, setManualGrams] = useState<string>('100')
+  const panelRef = useRef<HTMLDivElement>(null)
 
-  const results = useMemo(() => searchFoods(query, category).slice(0, 8), [query, category])
+  const parsed = useMemo(() => parseQuery(query), [query])
+  const results = useMemo(
+    () => searchFoods(parsed.term, category).slice(0, 8),
+    [parsed.term, category],
+  )
+
+  // Garde le panneau quantité visible au-dessus du clavier mobile
+  useEffect(() => {
+    if (selected) panelRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  }, [selected])
 
   function pick(food: Food) {
     setSelected(food)
     if (food.unit) {
       setMode('unit')
-      setQty('1')
+      setQty(parsed.qty ?? '1')
     } else {
       setMode('g')
-      setQty('100')
+      setQty(parsed.qty ?? '100')
     }
   }
 
@@ -66,7 +83,7 @@ export default function FoodPicker({
 
   function addManual() {
     const grams = parseFloat(manualGrams.replace(',', '.')) || 0
-    const name = query.trim()
+    const name = parsed.term.trim()
     if (!name || grams <= 0) return
     onAdd({
       id: uid(),
@@ -108,6 +125,12 @@ export default function FoodPicker({
         )}
       </div>
 
+      {!selected && !query && (
+        <p className="picker-hint">
+          Astuce : tape la quantité devant, ex. <b>4 oeuf</b> ou <b>150 poulet</b>.
+        </p>
+      )}
+
       {!selected && query && (
         <ul className="results">
           {results.map((f) => (
@@ -123,9 +146,7 @@ export default function FoodPicker({
           {results.length === 0 && allowManual && (
             <li>
               <div className="manual">
-                <span>
-                  Aucun résultat. Ajouter « {query.trim()} » ?
-                </span>
+                <span>Aucun résultat. Ajouter « {parsed.term.trim()} » ?</span>
                 <div className="qty-row">
                   <input
                     className="input small"
@@ -149,7 +170,7 @@ export default function FoodPicker({
       )}
 
       {selected && preview && (
-        <div className="qty-panel">
+        <div className="qty-panel" ref={panelRef}>
           <div className="qty-head">
             <strong>{selected.name}</strong>
             <button className="link" onClick={reset}>

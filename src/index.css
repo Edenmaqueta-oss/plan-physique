@@ -262,6 +262,15 @@ select {
   display: flex;
   gap: 8px;
 }
+.picker-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.picker-hint b {
+  color: var(--accent);
+  font-weight: 700;
+}
 .input,
 .select {
   background: var(--surface-2);
@@ -292,7 +301,9 @@ select {
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 12px;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 244px;
+  -webkit-overflow-scrolling: touch;
 }
 .result-btn {
   width: 100%;
