@@ -251,6 +251,24 @@ select {
   font-size: 12px;
   color: var(--text);
 }
+.chip-add {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.chip-add:active {
+  background: rgba(232, 255, 71, 0.15);
+  border-color: var(--accent);
+}
+.chip-plus {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1;
+}
 
 /* ─── Picker ─── */
 .picker {

@@ -1,13 +1,22 @@
 import { useState } from 'react'
 import type { EatenItem } from '../types'
 import FoodPicker from './FoodPicker'
+import { FOOD_BY_ID } from '../data/foods'
 import {
   PROTEIN_GOAL,
   dayProteinTotal,
   getTodayMeals,
   setMealItems,
+  uid,
   type DayMeals,
 } from '../lib/storage'
+
+/** Suggestion structurée → ajoutable d'un tap */
+interface Suggestion {
+  foodId: string
+  qty: number
+  mode: 'g' | 'unit'
+}
 
 interface Meal {
   id: string
@@ -15,7 +24,7 @@ interface Meal {
   goal: number
   color: string
   conseil: string
-  suggestions: string[]
+  suggestions: Suggestion[]
 }
 
 const MEALS: Meal[] = [
@@ -25,7 +34,12 @@ const MEALS: Meal[] = [
     goal: 42,
     color: '#e8ff47',
     conseil: 'Lance la machine tôt avec une base laitière + œufs.',
-    suggestions: ['200 g fromage blanc 0%', '3 œufs entiers', '60 g flocons d\'avoine', '30 g whey'],
+    suggestions: [
+      { foodId: 'fromage-blanc', qty: 200, mode: 'g' },
+      { foodId: 'oeuf', qty: 3, mode: 'unit' },
+      { foodId: 'avoine', qty: 60, mode: 'g' },
+      { foodId: 'whey', qty: 30, mode: 'g' },
+    ],
   },
   {
     id: 'collation',
@@ -33,7 +47,12 @@ const MEALS: Meal[] = [
     goal: 30,
     color: '#ff9f45',
     conseil: 'Snack dense et pratique entre les repas.',
-    suggestions: ['1 boîte de thon', 'Skyr 250 g', '30 g amandes', '1 barre protéinée'],
+    suggestions: [
+      { foodId: 'thon-boite', qty: 1, mode: 'unit' },
+      { foodId: 'skyr', qty: 250, mode: 'g' },
+      { foodId: 'amandes', qty: 30, mode: 'g' },
+      { foodId: 'barre-proteinee', qty: 1, mode: 'unit' },
+    ],
   },
   {
     id: 'dejeuner',
@@ -41,7 +60,12 @@ const MEALS: Meal[] = [
     goal: 52,
     color: '#5aa9ff',
     conseil: 'Le plus gros apport : viande/poisson maigre + glucides.',
-    suggestions: ['180 g blanc de poulet', '150 g riz complet', '200 g brocoli', '40 g parmesan'],
+    suggestions: [
+      { foodId: 'blanc-poulet', qty: 180, mode: 'g' },
+      { foodId: 'riz-complet', qty: 150, mode: 'g' },
+      { foodId: 'brocoli', qty: 200, mode: 'g' },
+      { foodId: 'parmesan', qty: 40, mode: 'g' },
+    ],
   },
   {
     id: 'post-training',
@@ -49,7 +73,11 @@ const MEALS: Meal[] = [
     goal: 36,
     color: '#b18cff',
     conseil: 'Protéines rapides juste après la séance.',
-    suggestions: ['40 g isolat de whey', '1 banane', '250 g fromage blanc'],
+    suggestions: [
+      { foodId: 'isolat', qty: 40, mode: 'g' },
+      { foodId: 'banane', qty: 1, mode: 'unit' },
+      { foodId: 'fromage-blanc', qty: 250, mode: 'g' },
+    ],
   },
   {
     id: 'diner',
@@ -57,9 +85,26 @@ const MEALS: Meal[] = [
     goal: 42,
     color: '#57d9a3',
     conseil: 'Repas complet, caséine lente possible avant le coucher.',
-    suggestions: ['170 g saumon', '200 g patate douce', '150 g haricots verts', '30 g caséine'],
+    suggestions: [
+      { foodId: 'saumon', qty: 170, mode: 'g' },
+      { foodId: 'patate-douce', qty: 200, mode: 'g' },
+      { foodId: 'haricot-vert', qty: 150, mode: 'g' },
+      { foodId: 'caseine', qty: 30, mode: 'g' },
+    ],
   },
 ]
+
+/** Construit un EatenItem + son libellé à partir d'une suggestion */
+function buildSuggestion(s: Suggestion): { item: EatenItem; label: string } {
+  const food = FOOD_BY_ID[s.foodId]
+  const grams = s.mode === 'unit' && food.unit ? s.qty * food.unit.grams : s.qty
+  const protein = (grams * food.protein) / 100
+  const label =
+    s.mode === 'unit' && food.unit
+      ? `${s.qty} × ${food.name.toLowerCase()}`
+      : `${s.qty} g ${food.name.toLowerCase()}`
+  return { item: { id: uid(), foodId: food.id, name: food.name, grams, protein }, label }
+}
 
 export default function PlanTab() {
   const [meals, setMeals] = useState<DayMeals>(() => getTodayMeals())
@@ -132,11 +177,18 @@ export default function PlanTab() {
                     <p className="conseil-title">Conseil du plan</p>
                     <p className="muted">{meal.conseil}</p>
                     <div className="chips">
-                      {meal.suggestions.map((s) => (
-                        <span key={s} className="chip">
-                          {s}
-                        </span>
-                      ))}
+                      {meal.suggestions.map((s, i) => {
+                        const { item, label } = buildSuggestion(s)
+                        return (
+                          <button
+                            key={i}
+                            className="chip chip-add"
+                            onClick={() => update(meal.id, [...items, item])}
+                          >
+                            <span className="chip-plus">+</span> {label}
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
 
