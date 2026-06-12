@@ -38,23 +38,11 @@ la clé est exposée côté client : **usage strictement personnel**, ne publie 
 
 ## Déploiement — GitHub Pages (branche `gh-pages`)
 
-### Option A — automatique (recommandé)
+Publication directe du dossier `dist` sur la branche `gh-pages`.
 
-Le workflow [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) build et publie sur
-`gh-pages` à chaque push sur `main`, via le `GITHUB_TOKEN` intégré (aucun token personnel à coller).
+**Le plus simple :** double-clic sur **`deploy.command`** (build + envoi automatique).
 
-```bash
-git init
-git add .
-git commit -m "init plan-physique"
-git branch -M main
-git remote add origin https://github.com/Edenmaqueta-oss/plan-physique.git
-git push -u origin main
-```
-
-Puis dans **Settings → Pages**, source = branche `gh-pages` / dossier `/ (root)`.
-
-### Option B — manuelle depuis ta machine
+Ou en ligne de commande :
 
 ```bash
 npm run deploy   # build + push du dossier dist sur la branche gh-pages
