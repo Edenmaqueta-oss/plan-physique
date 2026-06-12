@@ -28,6 +28,8 @@ export const FOODS: Food[] = [
   { id: 'cuisse-poulet', name: 'Cuisse de poulet', category: 'Viande', protein: 25, unit: { label: 'cuisse', grams: 130 } },
   { id: 'agneau', name: 'Agneau', category: 'Viande', protein: 25 },
   { id: 'bacon', name: 'Bacon', category: 'Viande', protein: 37, unit: { label: 'tranche', grams: 15 } },
+  { id: 'saucisse', name: 'Saucisse', category: 'Viande', protein: 15, unit: { label: 'saucisse', grams: 75 } },
+  { id: 'merguez', name: 'Merguez', category: 'Viande', protein: 16, unit: { label: 'merguez', grams: 60 } },
 
   // ─── Poisson ───
   { id: 'thon-boite', name: 'Thon en boîte', category: 'Poisson', protein: 28, unit: { label: 'boîte', grams: 140 } },
@@ -79,6 +81,7 @@ export const FOODS: Food[] = [
   { id: 'pates-cuites', name: 'Pâtes cuites', category: 'Glucides', protein: 5 },
   { id: 'pates-crues', name: 'Pâtes crues', category: 'Glucides', protein: 13 },
   { id: 'pain-complet', name: 'Pain complet', category: 'Glucides', protein: 9, unit: { label: 'tranche', grams: 35 } },
+  { id: 'pain-blanc', name: 'Pain blanc', category: 'Glucides', protein: 8, unit: { label: 'tranche', grams: 35 } },
   { id: 'pomme-terre', name: 'Pomme de terre', category: 'Glucides', protein: 2 },
   { id: 'quinoa', name: 'Quinoa', category: 'Glucides', protein: 4 },
   { id: 'riz-complet', name: 'Riz complet', category: 'Glucides', protein: 3 },
