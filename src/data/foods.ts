@@ -86,6 +86,7 @@ export const FOODS: Food[] = [
   { id: 'frites-maison', name: 'Frites maison', category: 'Glucides', protein: 4 },
   { id: 'croissant', name: 'Croissant', category: 'Glucides', protein: 8, unit: { label: 'croissant', grams: 60 } },
   { id: 'chausson-pommes', name: 'Chausson aux pommes', category: 'Glucides', protein: 5, unit: { label: 'chausson', grams: 90 } },
+  { id: 'gateau-chocolat', name: 'Gâteau au chocolat maison', category: 'Glucides', protein: 6, unit: { label: 'part', grams: 80 } },
   { id: 'pomme-terre', name: 'Pomme de terre', category: 'Glucides', protein: 2 },
   { id: 'quinoa', name: 'Quinoa', category: 'Glucides', protein: 4 },
   { id: 'riz-complet', name: 'Riz complet', category: 'Glucides', protein: 3 },
